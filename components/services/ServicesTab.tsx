@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 type Service = {
   id: string;
@@ -33,31 +35,44 @@ export default function ServicesTab() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-4">
-        <input
+    <div className="flex flex-col gap-6 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <div>
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Services</h2>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          Search for medical services by facility.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <Input
           placeholder="Facility ID (optional)"
           value={facilityId}
           onChange={(e) => setFacilityId(e.target.value)}
-          className="border px-3 py-2 rounded w-full md:w-96"
+          className="w-full sm:w-96 bg-white dark:bg-zinc-900"
         />
-        <button
+        <Button
           onClick={fetchServices}
-          className="bg-black text-white px-4 py-2 rounded"
+          disabled={loading}
+          variant="primary"
+          className="w-full sm:w-auto"
         >
-          Fetch Services
-        </button>
+          {loading ? 'Fetching...' : 'Fetch Services'}
+        </Button>
       </div>
 
-      {loading && <p className="text-sm text-gray-500">Loading...</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <div className="grid gap-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {services.length === 0 && !loading && !error && (
+          <div className="col-span-full rounded-lg border border-dashed border-zinc-200 p-8 text-center text-sm text-zinc-500 dark:border-zinc-800">
+            No services found. Try running a search.
+          </div>
+        )}
         {services.map((service) => (
-          <div key={service.id} className="border rounded p-4">
-            <p className="font-medium">{service.name}</p>
-            <p className="text-xs text-gray-500">
-              Facility ID: {service.facility_id}
+          <div key={service.id} className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
+            <p className="font-medium text-zinc-900 dark:text-zinc-50">{service.name}</p>
+            <p className="mt-1 text-xs text-zinc-500">
+              Facility ID: <span className="font-mono">{service.facility_id}</span>
             </p>
           </div>
         ))}
