@@ -1,36 +1,300 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OpenHealth NG
 
-## Getting Started
+A public, read-only API for discovering healthcare facilities, services, and emergency resources across Nigeria.
 
-First, run the development server:
+OpenHealth NG is designed as **neutral public infrastructure**, not a consumer application. It exposes structured healthcare data through a versioned REST API, intended for developers, researchers, civic technologists, and organizations building health-related tools.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Project Goals
+
+* Provide a **single, consistent interface** for accessing healthcare-related public data in Nigeria
+* Demonstrate **backend-first system design** and real-world data modeling
+* Build for **unknown consumers**, not a predefined frontend
+* Keep the system **simple, stable, and reusable**
+
+This project intentionally avoids features like authentication, user accounts, dashboards, or appointments.
+
+---
+
+## Design Principles
+
+### API-First
+
+The API is the product. Any frontend or client application is considered a consumer, not a core dependency.
+
+### Public Read Access
+
+All endpoints are publicly readable. Data mutation is restricted and intended only for controlled ingestion or administrative pipelines.
+
+### Real-World Data Modeling
+
+Healthcare data is messy and incomplete. The schema and API are designed to tolerate partial coverage and incremental growth.
+
+### Minimal Scope
+
+Only essential entities are modeled to avoid overfitting the system:
+
+* Health facilities
+* Services
+* Emergency contacts
+* Geographic locations (derived)
+
+---
+
+## Base URL & Versioning
+
+All endpoints are versioned.
+
+```
+/api/v1
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Versioning ensures backward compatibility as the dataset and API evolve.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Core Entities
 
-## Learn More
+### HealthFacility
 
-To learn more about Next.js, take a look at the following resources:
+Represents a physical healthcare location such as a hospital, clinic, pharmacy, or laboratory.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Key attributes:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* name
+* facility_type (hospital, clinic, pharmacy, laboratory)
+* ownership (public or private)
+* address
+* state
+* lga
+* optional geolocation (latitude, longitude)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Service
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Represents a healthcare service offered by a facility.
+
+Examples:
+
+* Emergency
+* Maternity
+* Diagnostics
+
+Services are linked to facilities via foreign keys.
+
+---
+
+### EmergencyContact
+
+Represents emergency phone numbers at national or state level.
+
+Examples:
+
+* Nigeria Police Force
+* State emergency response lines
+* Ambulance services
+
+---
+
+### Location
+
+Locations are **derived**, not stored as a standalone table.
+
+* States and LGAs are inferred from existing healthcare facilities
+* This prevents duplication and ensures geographic data reflects actual infrastructure presence
+
+---
+
+## Endpoints
+
+### Health Facilities
+
+#### List facilities
+
+```
+GET /api/v1/facilities
+```
+
+Query parameters:
+
+* state (optional)
+* lga (optional)
+* facility_type (optional)
+
+Example:
+
+```
+GET /api/v1/facilities?state=Lagos&facility_type=hospital
+```
+
+---
+
+#### Get facility by ID
+
+```
+GET /api/v1/facilities/{id}
+```
+
+---
+
+#### Create facility (restricted)
+
+```
+POST /api/v1/facilities
+```
+
+Used for controlled data ingestion. Not intended for public use.
+
+---
+
+### Services
+
+#### List services
+
+```
+GET /api/v1/services
+```
+
+Optional query:
+
+* facility_id
+
+---
+
+#### Create service (restricted)
+
+```
+POST /api/v1/services
+```
+
+---
+
+### Emergency Contacts
+
+#### List emergency contacts
+
+```
+GET /api/v1/emergency-contacts
+```
+
+Optional query:
+
+* state
+
+---
+
+#### Create emergency contact (restricted)
+
+```
+POST /api/v1/emergency-contacts
+```
+
+---
+
+### Locations
+
+#### List states
+
+```
+GET /api/v1/locations/states
+```
+
+Returns states where at least one healthcare facility exists.
+
+---
+
+#### List LGAs by state
+
+```
+GET /api/v1/locations/lgas?state=Oyo
+```
+
+---
+
+## Response Format
+
+Successful responses:
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "version": "v1"
+  }
+}
+```
+
+Error responses:
+
+```json
+{
+  "error": "Resource not found"
+}
+```
+
+---
+
+## Data Coverage & Limitations
+
+* Data is **not exhaustive**
+* Coverage varies by state and facility type
+* Emergency contact information may change over time
+
+OpenHealth NG is designed to grow incrementally rather than claim completeness.
+
+---
+
+## Technology Stack
+
+* Next.js (App Router)
+* Supabase (PostgreSQL + Row Level Security)
+* RESTful API design
+
+---
+
+## Local Development
+
+1. Clone the repository
+2. Set environment variables:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
+3. Run the development server
+
+```
+npm run dev
+```
+
+---
+
+## Intended Use Cases
+
+* Health discovery applications
+* Civic technology projects
+* Research and analysis
+* Emergency response tools
+* Data aggregation and visualization
+
+---
+
+## Scope Clarification
+
+This project intentionally does **not** include:
+
+* User accounts
+* Authentication flows
+* Appointment booking
+* Admin dashboards
+
+Those concerns are considered downstream applications.
+
+---
+
+## Status
+
+OpenHealth NG is an active infrastructure prototype intended to demonstrate backend system design and public API architecture.
