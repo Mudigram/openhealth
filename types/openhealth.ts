@@ -1,7 +1,9 @@
 export type FacilityService = {
   services: {
     name: string;
-  };
+  } | {
+    name: string;
+  }[];
 };
 
 export type FacilityRow = {
@@ -14,3 +16,5 @@ export type FacilityRow = {
   address: string;
   facility_services: FacilityService[];
 };
+
+export type ExplorerTab = 'facilities' | 'services' | 'emergency' | 'locations';

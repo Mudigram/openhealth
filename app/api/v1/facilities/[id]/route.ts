@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { FacilityService } from "@/types/openhealth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const { id } = params;
 
   const { data, error } = await supabaseServer
@@ -40,7 +42,12 @@ export async function GET(
     lga: data.lga,
     address: data.address,
     services: data.facility_services.map(
-      (fs: any) => fs.services.name
+      (fs: FacilityService) => {
+        if (Array.isArray(fs.services)) {
+          return fs.services[0]?.name;
+        }
+        return fs.services?.name;
+      }
     ),
   };
 

@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/Button"
+import { ExplorerTab } from "@/types/openhealth"
 
 interface TabsProps {
-    activeTab: string
-    onTabChange: (tab: any) => void
+    activeTab: ExplorerTab
+    onTabChange: (tab: ExplorerTab) => void
 }
 
 export default function ExplorerTabs({ activeTab, onTabChange }: TabsProps) {
-    const tabs = ['facilities', 'services', 'emergency', 'locations']
+    const tabs: ExplorerTab[] = ['facilities', 'services', 'emergency', 'locations']
 
     return (
         <div className="mb-6 flex gap-2 overflow-x-auto pb-2">

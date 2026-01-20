@@ -12,7 +12,7 @@ import Skeleton from '@/components/ui/Skeleton'
 // Dynamically import MapPanel to avoid SSR issues with Leaflet
 const MapPanel = dynamic(() => import('./MapPanel'), {
     ssr: false,
-    loading: () => <Skeleton className="h-[400px] w-full" />
+    loading: () => <Skeleton className="h-100 w-full" />
 })
 
 export default function FacilitiesPanel() {
@@ -101,7 +101,7 @@ export default function FacilitiesPanel() {
                     </Button>
                 </div>
 
-                <div className="flex-1 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50 min-h-[400px]">
+                <div className="flex-1 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50 min-h-100">
                     {loading ? (
                         <div className="p-4 space-y-4">
                             <Skeleton className="h-8 w-3/4" />

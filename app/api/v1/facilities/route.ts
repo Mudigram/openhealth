@@ -52,7 +52,12 @@ export async function GET(request: Request) {
     state: facility.state,
     lga: facility.lga,
     address: facility.address,
-    services: facility.facility_services.map((fs) => fs.services.name),
+    services: facility.facility_services.map((fs) => {
+      if (Array.isArray(fs.services)) {
+        return fs.services[0]?.name;
+      }
+      return fs.services?.name;
+    }),
   }));
 
   return NextResponse.json(normalized);
@@ -60,7 +65,7 @@ export async function GET(request: Request) {
 
 
 export async function POST(req: Request) {
-   try {
+  try {
     const body = await req.json();
 
     const { name, type, address } = body;

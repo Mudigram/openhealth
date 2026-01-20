@@ -8,10 +8,11 @@ import EndpointPanel from '@/components/explorer/EndpointPanel'
 import { Button } from '@/components/ui/Button'
 import ApiInfoTab from '@/components/api/ApiInfoTab'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ExplorerTab } from '@/types/openhealth'
 
 
 export default function ExplorerPage() {
-    const [activeTab, setActiveTab] = useState<'facilities' | 'services' | 'emergency' | 'locations'>('facilities')
+    const [activeTab, setActiveTab] = useState<ExplorerTab>('facilities')
     const [showInfo, setShowInfo] = useState(false)
 
 
